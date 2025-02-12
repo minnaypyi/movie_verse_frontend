@@ -51,7 +51,7 @@ export default function SelectGenre() {
       });
 
       if (response.ok) {
-        history.push('/login'); // Redirect to login on success
+        history.push('/'); // Redirect to home on success
       } else {
         setError('Registration failed.');
       }

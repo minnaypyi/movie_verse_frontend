@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Link,  useHistory } from 'react-router-dom';
 
 // import axios from 'axios';
 
@@ -7,7 +7,7 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
+  const history = useHistory();
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -33,10 +33,19 @@ export default function Login() {
       }
   
       const data = await response.json();
-      console.log('Login successful:', data);
-      // Optionally store the auth token, redirect, etc.
-      // Redirect user on success, e.g., using `history.push('/')` or a similar redirect.
-      history.push('/');
+      // Check if the response contains a token
+      if (data.token) {
+        // Save the token in localStorage
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('username', username)
+        // Optionally, redirect to another page after successful login
+        console.log('Login successful:', data);
+        // 🔥 Force a page reload to reflect changes immediately
+        window.location.href = '/';
+      } else {
+          // Handle error if token is not returned
+          console.error('Token not found in the response');
+        }
   
     } catch (error) {
       console.error('Error during login:', error);

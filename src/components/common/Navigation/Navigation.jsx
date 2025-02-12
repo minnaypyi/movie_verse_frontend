@@ -8,12 +8,23 @@ import Searchbar from './Searchbar';
 const Navigation = () => {
   const [isOpenNavigation, setOpenNavigation] = useState(false);
   const [isOpenSearchForMobile, setOpenSearchMobile] = useState(false);
+  const [user, setUser] = useState(null); // Store user info
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown toggle
 
   useEffect(() => {
     if (window.screen.width > 768) {
       window.addEventListener('scroll', scrollHandler);
     }
     return () => window.removeEventListener('scroll', scrollHandler);
+  }, []);
+
+  useEffect(() => {
+    // Get user from localStorage
+    // const storedUser = JSON.parse(localStorage.getItem('userData'));
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) {
+      setUser(storedUser);
+    }
   }, []);
 
   const onNavigationToggle = () => {
@@ -48,6 +59,12 @@ const Navigation = () => {
     } else {
       document.body.classList.remove('is-scrolled');
     }
+  };
+
+  
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    setUser(null);
   };
 
   return (
@@ -145,11 +162,29 @@ const Navigation = () => {
           >
             <i className={`fa fa-${isOpenSearchForMobile ? 'times' : 'search'}`} />
           </button>
-          {/* Log In / Register Buttons */}
+          {/* User Dropdown OR Log In/Register */}
           <div className="navigation__active">
-            <Link to={route.LOGIN} className="navigation__link">
-              Log In / Register
-            </Link>
+            {user ? (
+              <div className="relative">
+                <button className="navigation__link" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  {user} <i className="fa fa-caret-down"></i>
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
+                    <Link to={route.PROFILE} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                      Profile
+                    </Link>
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to={route.LOGIN} className="navigation__link">
+                Log In / Register
+              </Link>
+            )}
           </div>
         </div>
       </div>
