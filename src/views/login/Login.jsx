@@ -19,7 +19,7 @@ export default function Login() {
   
     try {
       // Send the login request using fetch
-      const response = await fetch('http://localhost:8080/api/auth/users/login', {
+      const response = await fetch('http://:8080/api/auth/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

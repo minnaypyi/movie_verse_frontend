@@ -5,16 +5,24 @@ import { HiStar } from 'react-icons/hi';
 // @ts-ignore
 import LazyLoad from 'react-lazy-load';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-
+import { useEffect } from 'react';
+import { fetchGenres } from "@app/redux/actions";
 const tmdbPosterPath = 'https://image.tmdb.org/t/p/w300_and_h450_face/';
 const tmdbBackdropPath = 'https://image.tmdb.org/t/p/original';
 
 const MovieSliderItem = ({ movie }) => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const genres = useSelector((state) => state.genre.genres);
-
+  console.log("Genres from Redux:", genres);
+  useEffect(() => {
+    if (genres.length === 0) {
+      console.log("🚀 Dispatching fetchGenres()...");
+      dispatch(fetchGenres());
+    }
+  }, [dispatch, genres.length]);
   return (
     <SkeletonTheme
       color={getCSSVar('--skeleton-theme-color')}
@@ -39,6 +47,7 @@ const MovieSliderItem = ({ movie }) => {
                 <Skeleton width={'30%'} />
               )}
             </p>
+
             <p className="movie__slider-genre">
               {movie?.genre_ids
                 ? movie.genre_ids.map((a) => {
@@ -46,11 +55,13 @@ const MovieSliderItem = ({ movie }) => {
                     return (
                       <Link key={a} className="movie__slider-genre-pill" to={`/genre/${genre?.name}/${a}`}>
                         {genre?.name}
+                        
                       </Link>
                     );
                   })
                 : <Skeleton width={'25%'} />}
             </p>
+            
             <p className="view__overview mt-0">
               {movie?.overview || <Skeleton count={4} />}
             </p>

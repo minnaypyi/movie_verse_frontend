@@ -23,7 +23,7 @@ const useFavorites = () => {
     try {
       // Make API call to toggle favorite status on the backend
       await axios.post(
-        `http://localhost:8080/api/user-interactions/favorite/${movie.id}`, // Use correct movie ID
+        `http://${VITE_BACKEND_URL}/api/user-interactions/favorite/${movie.id}`, // Use correct movie ID
         {},
         {
           headers: {
