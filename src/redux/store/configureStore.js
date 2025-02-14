@@ -1,24 +1,24 @@
-import reducers from '@app/redux/reducers';
-import rootSaga from '@app/redux/sagas/rootSaga';
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import createSagaMiddleware from 'redux-saga';
+import reducers from "@app/redux/reducers";
+import rootSaga from "@app/redux/sagas/rootSaga";
+import { applyMiddleware, combineReducers, compose, createStore } from "redux";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import createSagaMiddleware from "redux-saga";
 
 const sagaMiddleware = createSagaMiddleware();
 
 const composeEnhancers =
-  (import.meta.env.VITE_NODE_ENV !== 'prod' &&
-    typeof window !== 'undefined' &&
+  (import.meta.env.VITE_NODE_ENV !== "prod" &&
+    typeof window !== "undefined" &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
   compose;
 
-const storageName = 'movx-v2';
+const storageName = "movx-v2";
 
 const config = {
   key: storageName,
   storage,
-  whitelist: ['misc', 'search', 'filters', 'genre', 'favorites'],
+  whitelist: ["misc", "search", "filters", "genre", "favorites"],
 };
 
 const persistedReducer = persistReducer(config, combineReducers(reducers));

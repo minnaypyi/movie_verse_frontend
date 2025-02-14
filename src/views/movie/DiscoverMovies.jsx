@@ -1,6 +1,6 @@
 import { Container, Filter, Pagination } from '@app/components/common';
 import CustomPagination from '@app/components/common/Pagination/Pagination';
-import { MovieList } from '@app/components/main';
+import { MovieList } from '@app/components/main/Movies'; // Named import
 import { numberWithCommas } from '@app/helpers';
 import { useDidMount, useDocumentTitle, usePageSaver } from '@app/hooks';
 import { fetchDiscoverMovies } from '@app/redux/actions';

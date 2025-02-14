@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory  } from "react-router-dom";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const genres = [
   "Action",
   "Drama",
@@ -42,7 +43,7 @@ export default function SelectGenre() {
 
     // Send combined data to the backend for registration
     try {
-      const response = await fetch('http://localhost:8080/api/auth/users/register', {
+      const response = await fetch(`http://${backendUrl}:8080/api/auth/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,6 +52,7 @@ export default function SelectGenre() {
       });
 
       if (response.ok) {
+        localStorage.removeItem("userData");
         history.push('/'); // Redirect to home on success
       } else {
         setError('Registration failed.');

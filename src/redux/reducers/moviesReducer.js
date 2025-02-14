@@ -7,7 +7,8 @@ import {
   FETCH_TRENDING_MOVIES_SUCCESS,
   FETCH_TV_SHOWS_SUCCESS,
   FETCH_UPCOMING_MOVIES_SUCCESS,
-} from '@app/constants/actionType';
+  FETCH_RECOMMENDED_MOVIES_SUCCESS, // ✅ Added missing import
+} from "@app/constants/actionType";
 
 const defaultState = {
   trending: null,
@@ -22,6 +23,7 @@ const defaultState = {
   topRated: null,
   upcoming: null,
   tvShows: null,
+  recommended: null,
 };
 
 const moviesReducer = (state = defaultState, action) => {
@@ -31,7 +33,10 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         trending: {
           ...action.payload,
-          results: [...(state.trending?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.trending?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_DISCOVER_MOVIES_SUCCESS:
@@ -39,7 +44,10 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         discover: {
           ...action.payload,
-          results: [...(state.discover?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.discover?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_TV_SHOWS_SUCCESS:
@@ -47,7 +55,10 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         tvShows: {
           ...action.payload,
-          results: [...(state.tvShows?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.tvShows?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_SELECTED_MOVIE_SUCCESS:
@@ -60,7 +71,10 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         popular: {
           ...action.payload,
-          results: [...(state.popular?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.popular?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_TOPRATED_MOVIES_SUCCESS:
@@ -68,7 +82,10 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         topRated: {
           ...action.payload,
-          results: [...(state.topRated?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.topRated?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_UPCOMING_MOVIES_SUCCESS:
@@ -76,7 +93,23 @@ const moviesReducer = (state = defaultState, action) => {
         ...state,
         upcoming: {
           ...action.payload,
-          results: [...(state.upcoming?.results || []), ...(action.payload.results || [])],
+          results: [
+            ...(state.upcoming?.results || []),
+            ...(action.payload.results || []),
+          ],
+        },
+      };
+    case FETCH_UPCOMING_MOVIES_SUCCESS:
+      return { ...state, upcoming: action.payload };
+    case FETCH_RECOMMENDED_MOVIES_SUCCESS: // ✅ Handle recommended movies
+      return {
+        ...state,
+        recommended: {
+          ...action.payload,
+          results: [
+            ...(state.recommended?.results || []),
+            ...(action.payload.results || []),
+          ],
         },
       };
     case FETCH_MAIN_MOVIES_SUCCESS:
@@ -85,7 +118,9 @@ const moviesReducer = (state = defaultState, action) => {
         upcoming: action.payload.upcoming,
         topRated: action.payload.topRated,
         popular: action.payload.popular,
+        recommended: action.payload.recommended, // ✅ Store recommended movies
       };
+
     default:
       return state;
   }

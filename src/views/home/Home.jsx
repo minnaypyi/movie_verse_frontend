@@ -9,25 +9,44 @@ const Home = ({ history }) => {
     popularMovies,
     topRatedMovies,
     upcomingMovies,
+    recommendedMovies,
   } = useSelector(state => ({
     popularMovies: state.movies.popular,
     topRatedMovies: state.movies.topRated,
     upcomingMovies: state.movies.upcoming,
     favorites: state.favorites,
+    recommendedMovies: state.movies.recommended,
   }));
   const dispatch = useDispatch();
-
+  const isAuthenticated = !!localStorage.getItem("authToken"); // Assuming store the token in localStorage
   useDocumentTitle();
   useEffect(() => {
-    if (!popularMovies || !topRatedMovies || !upcomingMovies) {
+    if (!popularMovies || !topRatedMovies || !upcomingMovies || !recommendedMovies) {
       dispatch(fetchMainMovies());
     }
-  }, [dispatch, popularMovies, topRatedMovies, upcomingMovies]);
+  }, [dispatch, popularMovies, topRatedMovies, upcomingMovies, recommendedMovies]);
 
   return (
     <>
       <MovieSlider movies={popularMovies?.results || []} />
       <div className="container__wrapper">
+        {isAuthenticated && recommendedMovies && (
+          <>
+            <div className="movie__header">
+              <div className="movie__header-title header__title">
+                <br /><br />
+                <h1>Recommended Movies</h1>
+              </div>
+            </div>
+            <MovieList movies={recommendedMovies.results.slice(0, 5)} />
+            <button
+              className="button--primary m-auto"
+              onClick={() => history.push('/recommended-movies')}
+            >
+              View All Recommended Movies
+            </button>
+          </>
+        )}
         {upcomingMovies && (
           <>
             <div className="movie__header">
@@ -36,7 +55,7 @@ const Home = ({ history }) => {
                 <h1>Upcoming Movies</h1>
               </div>
             </div>
-            <MovieList movies={upcomingMovies.results.slice(0, 10)} />
+            <MovieList movies={upcomingMovies.results.slice(0, 5)} />
             <button
               className="button--primary m-auto"
               onClick={() => history.push('/upcoming')}
@@ -54,7 +73,7 @@ const Home = ({ history }) => {
                 <h1>Top Rated Movies</h1>
               </div>
             </div>
-            <MovieList movies={topRatedMovies.results.slice(0, 10)} />
+            <MovieList movies={topRatedMovies.results.slice(0, 5)} />
             <button
               className="button--primary m-auto"
               onClick={() => history.push('/top_rated')}

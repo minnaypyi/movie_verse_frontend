@@ -1,8 +1,8 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect } from "react";
 
 const useDocumentTitle = (title) => {
   useLayoutEffect(() => {
-    document.title = title || 'MOVX | Movie Browser';
+    document.title = title || "MOVIEVERSE | Movie Browser";
   }, [title]);
 };
 

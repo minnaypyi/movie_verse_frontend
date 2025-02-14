@@ -17,6 +17,12 @@ const watchedMoviesReducer = (state = initialState, action) => {
           (movie) => movie.id !== action.payload.id
         ),
       };
+    //new
+    case "SET_WATCHED_MOVIES":
+      return {
+        ...state,
+        watchedMovies: action.payload, // Replace state with fetched movies
+      };
     default:
       return state;
   }

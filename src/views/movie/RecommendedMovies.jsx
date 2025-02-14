@@ -1,30 +1,31 @@
-import { Container, Pagination } from '@app/components/common';
+import { Container } from '@app/components/common';
 import CustomPagination from '@app/components/common/Pagination/Pagination';
 import { MovieList } from '@app/components/main/Movies'; // Named import
 import { numberWithCommas } from '@app/helpers/helperFunctions';
 import { useDocumentTitle, usePageSaver } from '@app/hooks';
-import { fetchTrendingMovies } from '@app/redux/actions';
+import { fetchRecommendedMovies } from '@app/redux/actions';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-const TrendingMovies = () => {
-  const { trendingMovies, isLoading } = useSelector(state => ({
-    trendingMovies: state.movies.trending,
+const RecommendedMovies = () => {
+  const { recommendedMovies, isLoading } = useSelector(state => ({
+    recommendedMovies: state.movies.recommended,
     isLoading: state.misc.isLoading,
   }));
   const { currentPage, setCurrentPage } = usePageSaver();
   const dispatch = useDispatch();
 
-  useDocumentTitle('Trending Movies | MOVX');
+  useDocumentTitle('Recommended Movies | MOVX');
+
   useEffect(() => {
-    if (!trendingMovies) {
-      dispatch(fetchTrendingMovies(currentPage));
+    if (!recommendedMovies) {
+      dispatch(fetchRecommendedMovies(currentPage));
     }
-  }, [trendingMovies, currentPage, dispatch]);
+  }, [recommendedMovies, currentPage, dispatch]);
 
   const handlePageChange = (page) => {
-    if (trendingMovies?.page !== page && !isLoading) {
-      dispatch(fetchTrendingMovies(page));
+    if (recommendedMovies?.page !== page && !isLoading) {
+      dispatch(fetchRecommendedMovies(page));
       setCurrentPage(page);
     }
   };
@@ -33,22 +34,22 @@ const TrendingMovies = () => {
     <Container>
       <div className="movie__header">
         <div className="movie__header-title">
-          <h1>Trending Movies</h1>
-          <h3>{numberWithCommas(trendingMovies?.total_results || 0)} Movies</h3>
+          <h1>Recommended Movies</h1>
+          <h3>{numberWithCommas(recommendedMovies?.total_results || 0)} Movies</h3>
         </div>
       </div>
       <MovieList
-        movies={trendingMovies?.results || []}
+        movies={recommendedMovies?.results || []}
         templateCount={10}
       />
-      {trendingMovies && (
+      {recommendedMovies && (
         <CustomPagination
-          activePage={trendingMovies.page}
+          activePage={recommendedMovies.page}
           itemsCountPerPage={1}
           onChange={handlePageChange}
           pageRangeDisplayed={10}
-          totalItemsCount={trendingMovies.total_pages}
-          totalPage={trendingMovies.total_pages}
+          totalItemsCount={recommendedMovies.total_pages}
+          totalPage={recommendedMovies.total_pages}
           infiniteScroll={true}
         />
       )}
@@ -56,4 +57,4 @@ const TrendingMovies = () => {
   );
 };
 
-export default TrendingMovies;
+export default RecommendedMovies;

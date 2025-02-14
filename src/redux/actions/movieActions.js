@@ -1,4 +1,4 @@
-import * as action from '@app/constants/actionType';
+import * as action from "@app/constants/actionType";
 
 export const fetchTrendingMovies = (page = 1) => ({
   type: action.FETCH_TRENDING_MOVIES,
@@ -80,4 +80,19 @@ export const fetchUpcomingMoviesSuccess = (data) => ({
 export const fetchMainMoviesSuccess = (data) => ({
   type: action.FETCH_MAIN_MOVIES_SUCCESS,
   payload: data,
+});
+
+export const fetchRecommendedMovies = (page = 1) => ({
+  type: action.FETCH_RECOMMENDED_MOVIES,
+  payload: { page },
+});
+
+export const fetchRecommendedMoviesSuccess = (data) => ({
+  type: action.FETCH_RECOMMENDED_MOVIES_SUCCESS,
+  payload: data,
+});
+
+export const fetchWatchedMovies = (page = 1) => ({
+  type: action.FETCH_WATCHED_MOVIES,
+  payload: { page },
 });

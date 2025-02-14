@@ -17,6 +17,13 @@ export default function Register() {
       return;
     }
 
+    // Password validation: at least one lowercase, one uppercase, one number
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must contain at least one lowercase letter, one uppercase letter, and one number.');
+      return;
+    }
+
     // Save user data in localStorage or use global state management (like Redux)
     localStorage.setItem('userData', JSON.stringify({ username, email, password }));
 
@@ -89,6 +96,9 @@ export default function Register() {
                   />
                 </div>
               </div>
+              {error && (
+              <div className="mt-4 text-red-500 text-lg text-center">{error}</div>
+            )}
               <div>
               <button type="submit"
                   className="flex w-full justify-center rounded-2xl bg-blue-600 px-6 py-4 text-2xl font-bold text-white shadow-md hover:bg-blue-500 transition-all hover:shadow-lg focus:ring-4 focus:ring-blue-500">

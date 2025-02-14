@@ -7,7 +7,8 @@ import {
   FETCH_TRENDING_MOVIES,
   FETCH_TV_SHOWS,
   FETCH_UPCOMING_MOVIES,
-} from '@app/constants/actionType';
+  FETCH_RECOMMENDED_MOVIES,
+} from "@app/constants/actionType";
 import {
   getDiscoverMovies,
   getMovieCredits,
@@ -19,9 +20,10 @@ import {
   getTrendingMovies,
   getTvShows,
   getUpcomingMovies,
-} from '@app/services/api';
-import { all, call, put, select } from 'redux-saga/effects';
-import { setLoading } from '../actions/miscActions';
+  getRecommendedMovies,
+} from "@app/services/api";
+import { all, call, put, select } from "redux-saga/effects";
+import { setLoading } from "../actions/miscActions";
 import {
   fetchDiscoverMoviesSuccess,
   fetchMainMoviesSuccess,
@@ -31,7 +33,8 @@ import {
   fetchTrendingMoviesSuccess,
   fetchTVShowSuccess,
   fetchUpcomingMoviesSuccess,
-} from '../actions/movieActions';
+  fetchRecommendedMoviesSuccess,
+} from "../actions/movieActions";
 
 export function* movieSaga({ type, payload }) {
   switch (type) {
@@ -41,7 +44,7 @@ export function* movieSaga({ type, payload }) {
         const movies = yield call(getTrendingMovies, payload.page);
         yield put(fetchTrendingMoviesSuccess(movies));
       } catch (err) {
-        console.error('Error fetching trending movies:', err);
+        console.error("Error fetching trending movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -54,7 +57,7 @@ export function* movieSaga({ type, payload }) {
         const movies = yield call(getDiscoverMovies, filter, payload.page);
         yield put(fetchDiscoverMoviesSuccess(movies));
       } catch (err) {
-        console.error('Error fetching discover movies:', err);
+        console.error("Error fetching discover movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -66,7 +69,7 @@ export function* movieSaga({ type, payload }) {
         const movies = yield call(getUpcomingMovies, payload.page);
         yield put(fetchUpcomingMoviesSuccess(movies));
       } catch (err) {
-        console.error('Error fetching upcoming movies:', err);
+        console.error("Error fetching upcoming movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -78,7 +81,7 @@ export function* movieSaga({ type, payload }) {
         const movies = yield call(getPopularMovies, payload.page);
         yield put(fetchPopularMoviesSuccess(movies));
       } catch (err) {
-        console.error('Error fetching popular movies:', err);
+        console.error("Error fetching popular movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -90,7 +93,7 @@ export function* movieSaga({ type, payload }) {
         const movies = yield call(getTopRatedMovies, payload.page);
         yield put(fetchTopRatedMoviesSuccess(movies));
       } catch (err) {
-        console.error('Error fetching top-rated movies:', err);
+        console.error("Error fetching top-rated movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -112,14 +115,17 @@ export function* movieSaga({ type, payload }) {
     case FETCH_MAIN_MOVIES: {
       try {
         yield put(setLoading(true));
-        const [popular, topRated, upcoming] = yield all([
+        const [popular, topRated, upcoming, recommended] = yield all([
           call(getPopularMovies, 1),
           call(getTopRatedMovies, 1),
           call(getUpcomingMovies, 1),
+          call(getRecommendedMovies, 1),
         ]);
-        yield put(fetchMainMoviesSuccess({ popular, topRated, upcoming }));
+        yield put(
+          fetchMainMoviesSuccess({ popular, topRated, upcoming, recommended })
+        );
       } catch (err) {
-        console.error('Error fetching main movies:', err);
+        console.error("Error fetching main movies:", err);
       } finally {
         yield put(setLoading(false));
       }
@@ -144,13 +150,25 @@ export function* movieSaga({ type, payload }) {
           })
         );
       } catch (err) {
-        console.error('Error fetching selected movie:', err);
+        console.error("Error fetching selected movie:", err);
+      } finally {
+        yield put(setLoading(false));
+      }
+      break;
+    }
+    case FETCH_RECOMMENDED_MOVIES: {
+      try {
+        yield put(setLoading(true));
+        const movies = yield call(getRecommendedMovies, payload.page);
+        yield put(fetchRecommendedMoviesSuccess(movies));
+      } catch (err) {
+        console.error("Error fetching recommended movies:", err);
       } finally {
         yield put(setLoading(false));
       }
       break;
     }
     default:
-      throw new Error('Unexpected action type');
+      throw new Error("Unexpected action type");
   }
 }

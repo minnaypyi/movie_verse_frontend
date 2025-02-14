@@ -1,20 +1,55 @@
 import { ImageLoader } from '@app/components/common';
 import { getCSSVar, getYear } from '@app/helpers';
-import { useFavorites } from '@app/hooks';
+import { useFavorites, useLogMovieView } from '@app/hooks';
 import React from 'react';
 import { HiStar } from 'react-icons/hi';
 import LazyLoad from 'react-lazy-load';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { Link } from 'react-router-dom';
+import { toast } from "react-toastify";
+import axios from 'axios';
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const MovieCard = ({ movie, category, isLoading }) => {
+  const { logMovieView, loading } = useLogMovieView(); // Use the hook to get the function
   const tmdbPosterPath = 'https://image.tmdb.org/t/p/w185_and_h278_face/';
   const { isFavorite, addToFavorites } = useFavorites();
+
+
+  // // Function to log the movie view on click
+  // const handleCardClick = async (tmdb_movie_id) => {
+  //   const token = localStorage.getItem("authToken");
+  //   if (!token) {
+  //     toast.error("Please log in to view movie details");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Make POST request to log the movie view
+  //     const response = await axios.post(
+  //       `http://${backendUrl}:8080/api/user-interactions/view/${tmdb_movie_id}`,
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     toast.success(response.data); // Show success message from backend
+  //   } catch (error) {
+  //     console.error("Error logging movie view:", error);
+  //     toast.error("Failed to log movie view");
+  //   }
+  // };
+
 
   const onClickCard = (e) => {
     if (isLoading) {
       e.preventDefault();
     }
+    logMovieView(movie?.id); // Log the movie view when the card is clicked
   };
 
   return (

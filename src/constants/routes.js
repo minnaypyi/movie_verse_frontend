@@ -21,3 +21,6 @@ export const REGISTER = "/register";
 export const SELECTGENRE = "/select-genre";
 export const NETWORK_ERROR = "/network-error";
 export const ERROR = "/error";
+export const FAVORITE_MOVIES = "/favorite-movies";
+export const WATCHED_MOVIES = "/watched-movies";
+export const RECOMMENDED_MOVIES = "/recommended-movies";

@@ -9,10 +9,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { fetchGenres } from "@app/redux/actions";
+import { useLogMovieView } from '@app/hooks'; // Import the hook
+
 const tmdbPosterPath = 'https://image.tmdb.org/t/p/w300_and_h450_face/';
 const tmdbBackdropPath = 'https://image.tmdb.org/t/p/original';
 
 const MovieSliderItem = ({ movie }) => {
+  const { logMovieView, loading } = useLogMovieView(); // Use the hook
   const history = useHistory();
   const dispatch = useDispatch();
   const genres = useSelector((state) => state.genre.genres);
@@ -23,6 +26,10 @@ const MovieSliderItem = ({ movie }) => {
       dispatch(fetchGenres());
     }
   }, [dispatch, genres.length]);
+  const handleViewMovieClick = () => {
+    logMovieView(movie?.id); // Log the movie view when the button is clicked
+    history.push(`/view/movie/${movie.id}`); // Redirect to movie details page
+  };
   return (
     <SkeletonTheme
       color={getCSSVar('--skeleton-theme-color')}
@@ -68,7 +75,7 @@ const MovieSliderItem = ({ movie }) => {
             <br />
             <div className="movie__slider-button">
               {movie?.id ? (
-                <button className="button--primary" onClick={() => history.push(`/view/movie/${movie.id}`)}>
+                <button className="button--primary" onClick={handleViewMovieClick}>
                   View Movie
                 </button>
               ) : (
@@ -78,15 +85,17 @@ const MovieSliderItem = ({ movie }) => {
           </div>
           <div className="view__poster">
             {movie ? (
-              <LazyLoad debounce={false} offsetVertical={500}>
+              //<LazyLoad debounce={false} offsetVertical={500} visibleByDefault={true}>
                 <ImageLoader
                   alt={movie.original_title || movie.original_name || movie.title}
                   imgId={movie.id}
                   src={movie.poster_path ? `${tmdbPosterPath + movie.poster_path}` : '/img-placeholder.jpg'}
                 />
-              </LazyLoad>
+              //</LazyLoad>
             ) : (
-              <Skeleton width={'100%'} height={'100%'} />
+              <LazyLoad debounce={false} offsetVertical={500}>
+                <Skeleton width={'100%'} height={'100%'} />
+              </LazyLoad>
             )}
           </div>
         </div>

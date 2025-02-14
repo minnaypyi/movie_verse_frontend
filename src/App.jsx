@@ -30,6 +30,12 @@ const MainContent = () => {
         <Route exact path={route.SEARCH} component={withProgress(view.Search)} />
         <Route exact path={route.VIEW_PEOPLE} component={withProgress(view.ViewPerson)} />
         <Route exact path={route.VIEW_GENRE} component={withProgress(view.SelectedGenre)}/>
+        <Route exact path={route.VIEW_MOVIE_POSTER} component={withProgress(view.MoviePosters)}/>
+        <Route exact path={route.VIEW_MOVIE_CASTS} component={withProgress(view.MovieCasts)}/>
+        <Route exact path={route.VIEW_PEOPLE_PROFILE} component={withProgress(view.Pictures)}/>
+        <Route exact path={route.FAVORITE_MOVIES} component={withProgress(view.FavoriteMovies)}/>
+        <Route exact path={route.WATCHED_MOVIES} component={withProgress(view.WatchedMovies)}/>
+        <Route exact path={route.RECOMMENDED_MOVIES} component={withProgress(view.RecommendedMovies)}/>
         <Route component={view.PageNotFound} />
       </Switch>
     </main>

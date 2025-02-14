@@ -1,7 +1,7 @@
 import ImageLoader from '@app/components/common/Loader/ImageLoader';
 import { getCSSVar, getYear } from '@app/helpers/helperFunctions';
 import useFavorites from '@app/hooks/useFavorites';
-//import useWatched from '@app/hooks/useWatched';
+import useWatched from '@app/hooks/useWatched';
 import React, { useState, useEffect } from 'react';
 import LazyLoad from 'react-lazy-load';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
@@ -11,8 +11,10 @@ import "react-responsive-modal/styles.css";
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { Star } from "lucide-react";
 import axios from 'axios';
-//import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { toast } from "react-toastify";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const tmdbPosterPath = 'https://image.tmdb.org/t/p/w300_and_h450_face/';
 const tmdbBackdropPath = 'https://image.tmdb.org/t/p/original';
 
@@ -21,7 +23,7 @@ const MovieOverview = () => {
   const history = useHistory();
   //const dispatch = useDispatch();
   const { isFavorite, addToFavorites } = useFavorites();
-  //const { isWatched, handleAddToWatched } = useWatched(); // Add similar logic for watched movies
+  const { isWatched, handleAddToWatched } = useWatched(); // Add similar logic for watched movies
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -42,18 +44,75 @@ const MovieOverview = () => {
     }
   }, []);
 
+  // Handle "Give Review" button click
+  const handleGiveReview = () => {
+    if (!token || !user) {
+      toast.dismiss();
+      toast.error("Please log in");
+      return; // Prevent modal from opening if not logged in
+    }
+    
+    setTmdbMovie(movie); // Set the movie for the review
+    setIsModalOpen(true); // Open the modal if logged in
+  };
+
+  useEffect(() => {
+    if (isModalOpen && tmdbMovie) {
+      // Fetch the existing review and rating from the backend
+      const fetchReviewData = async () => {
+        try {
+          // Fetch the rating
+          const ratingResponse = await axios.get(
+            `http://${backendUrl}:8080/api/ratings/${tmdbMovie.id}/user`, 
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+  
+          if (ratingResponse.data) {
+            setRating(ratingResponse.data.rating || 0); // Assuming the rating is in the response
+          }
+
+        // Fetch the review
+        const reviewResponse = await axios.get(
+          `http://${backendUrl}:8080/api/reviews/${tmdbMovie.id}/user`, 
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (reviewResponse.data) {
+          setReview(reviewResponse.data.editedReviewText || reviewResponse.data.originalReviewText || "");
+          setIsEdit(reviewResponse.data.editedReviewText ? true : false); // Set edit flag if review is edited
+        }
+      } catch (error) {
+        console.error("Error fetching review data:", error);
+      }
+    };
+
+    fetchReviewData();
+  }
+}, [isModalOpen, tmdbMovie, token]);
+
+
+
   const handleRating = (star) => setRating(star);
 
   const handleSubmitReview = async () => {
     if (!user || !token) {
-      alert("You must be logged in to submit a review.");
+      toast.dismiss();
+      toast.error("Please log in");
       return;
     }
 
     try {
 
       await axios.post(
-        `http://localhost:8080/api/reviews/${tmdbMovie.id}?reviewText=${encodeURIComponent(review)}&isEdit=${isEdit}`,
+        `http://${backendUrl}:8080/api/reviews/${tmdbMovie.id}?reviewText=${encodeURIComponent(review)}&isEdit=${isEdit}`,
         {},
         {
           headers: {
@@ -64,7 +123,7 @@ const MovieOverview = () => {
       );
 
       await axios.post(
-        `http://localhost:8080/api/ratings/${tmdbMovie.id}?rating=${rating}`,
+        `http://${backendUrl}:8080/api/ratings/${tmdbMovie.id}?rating=${rating}`,
         {},
         {
           headers: {
@@ -82,20 +141,6 @@ const MovieOverview = () => {
       alert("Failed to submit review and rating.");
     }
   };
-  
-  
-  // const handleWatchedToggle = (movie) => {
-  //   // if (isWatched(movie.id)) {
-  //   //   dispatch(removeFromWatched(movie.id)); // Remove from watched if it's already marked as watched
-  //   //   toast.dismiss();
-  //   //   toast.dark(`${movie.original_name || movie.original_title} \n Removed from watched`);
-  //   // } else {
-  //   //   dispatch(handleAddToWatched(movie)); // Add to watched list if not marked
-  //   //   toast.dismiss();
-  //   //   toast.dark(`${movie.original_name || movie.original_title} \n Added to watched`);
-  //   // }
-  //   handleAddToWatched(movie);  // Correctly call the function
-  // };
 
   return (
     <SkeletonTheme
@@ -172,7 +217,7 @@ const MovieOverview = () => {
                 <div className="view__actions">
                   {movie && (
                     <>
-                      <button className="button--primary" onClick={() => { setTmdbMovie(movie); setIsModalOpen(true); }}>
+                      <button className="button--primary" onClick={handleGiveReview}>
                         Give Review &nbsp;&nbsp;
                         <i className="fa fa-comment" />
                       </button>
@@ -195,10 +240,10 @@ const MovieOverview = () => {
                           }}
                         />
                       </button>
-                      {/* &nbsp;
+                      &nbsp;
                 <button
                   className="button--watched"
-                  onClick={() => handleWatchedToggle(movie)}
+                  onClick={() => handleAddToWatched(movie)}
                   style={{
                     color: isWatched(movie.id) ? '#fff' : getCSSVar('--text-color'),
                     background: isWatched(movie.id) ? '#4CAF50' : 'transparent',
@@ -213,7 +258,7 @@ const MovieOverview = () => {
                       color: isWatched(movie.id) ? '#fff' : getCSSVar('--text-color')
                     }}
                   />
-                </button> */}
+                </button>
                     </>
                   )}
                 </div>

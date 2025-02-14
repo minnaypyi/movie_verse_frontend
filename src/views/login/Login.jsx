@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Link,  useHistory } from 'react-router-dom';
 
 // import axios from 'axios';
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +19,7 @@ export default function Login() {
   
     try {
       // Send the login request using fetch
-      const response = await fetch('http://:8080/api/auth/users/login', {
+      const response = await fetch(`http://${backendUrl}:8080/api/auth/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,10 @@ export default function Login() {
         // Optionally, redirect to another page after successful login
         console.log('Login successful:', data);
         // 🔥 Force a page reload to reflect changes immediately
-        window.location.href = '/';
+        window.history.back();
+        setTimeout(function() {
+          window.location.reload();
+      }, 10); // Delay the reload for a short time to allow the back action to complete
       } else {
           // Handle error if token is not returned
           console.error('Token not found in the response');

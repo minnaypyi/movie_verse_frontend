@@ -63,8 +63,10 @@ const Navigation = () => {
 
   
   const handleLogout = () => {
-    localStorage.removeItem('userData');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('username');
     setUser(null);
+    window.location.reload();
   };
 
   return (
@@ -153,6 +155,28 @@ const Navigation = () => {
               >
                 People
               </NavLink>
+              {user && (
+                <>
+                  <NavLink
+                    activeClassName="navigation__active"
+                    className="navigation__link"
+                    exact
+                    strict
+                    to={route.FAVORITE_MOVIES}
+                  >
+                    Favorites
+                  </NavLink>
+                  <NavLink
+                    activeClassName="navigation__active"
+                    className="navigation__link"
+                    exact
+                    strict
+                    to={route.WATCHED_MOVIES}
+                  >
+                    Watched
+                  </NavLink>
+                </>
+              )}
             </div>
             <Searchbar closeSearchForMobile={closeSearchForMobile} />
           </div>
