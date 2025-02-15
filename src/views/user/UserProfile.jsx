@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import "./userprofile.css";
+import { toast } from "react-toastify";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const UserProfile = () => {
@@ -143,19 +145,75 @@ const UserProfile = () => {
           newPassword,
         }),
       })
-        .then((response) => {
+        .then(async (response) => {
+          const text = await response.text(); // Read response as plain text
+
           if (response.ok) {
-            setIsModalOpen(false);
-            alert("Password changed successfully");
+            //alert(text || "Password changed successfully.");
+            toast.success(text || "Password changed successfully.");
+            handleCloseModal(); // Close modal on success
           } else {
-            alert("Failed to change password");
+            //alert(text || "Failed to change password. Please try again.");
+            toast.error(text || "Failed to change password. Please try again.");
           }
         })
         .catch((error) => console.error("Error changing password:", error));
+      //alert("An unexpected error occurred. Please try again later.");
     }
   };
+
+  const handleDownloadUserInteractions = () => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      fetch(
+        `http://${backendUrl}:8080/api/user-interactions/getuserinteractions`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.length) {
+            const csvData = convertToCSV(data); // Convert data to CSV format
+            downloadCSV(csvData, "user_interactions.csv"); // Trigger file download
+          } else {
+            toast.error("No data available to download.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user interactions:", error);
+          toast.error("Failed to fetch data.");
+        });
+    }
+  };
+
+  const downloadCSV = (csvData, filename) => {
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.click();
+    }
+  };
+
+  const convertToCSV = (data) => {
+    const headers = Object.keys(data[0]);
+    const rows = data.map((row) =>
+      headers.map((header) => row[header]).join(",")
+    );
+    return [headers.join(","), ...rows].join("\n");
+  };
+
   const handleCloseModal = () => {
     // Clear the error when closing the modal
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
     setPasswordError("");
     setIsModalOpen(false);
   };
@@ -185,14 +243,15 @@ const UserProfile = () => {
           <strong>Reviews Given:</strong> {user.reviewCount || 0}
         </p>
       </div>
-
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="btn-change-password"
-      >
-        Change Password
-      </button>
-
+      <div className="button-group">
+        <button onClick={() => setIsModalOpen(true)} className="btn-action">
+          Change Password
+        </button>
+        {/* Download Button */}
+        <button onClick={handleDownloadUserInteractions} className="btn-action">
+          Download User Interactions
+        </button>
+      </div>
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">

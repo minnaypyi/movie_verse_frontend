@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import * as route from "@app/constants/routes";
 
 // import axios from 'axios';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -122,7 +123,7 @@ export default function Login() {
                 </label>
                 <div className="text-lg">
                   <a
-                    href="#"
+                    href={route.FORGOTPASSWORD}
                     className="font-semibold text-blue-400 hover:text-blue-300 transition"
                   >
                     Forgot password?

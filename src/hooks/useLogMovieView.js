@@ -18,7 +18,7 @@ const useLogMovieView = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/user-interactions/view/${tmdb_movie_id}`,
+        `http://${backendUrl}:8080/api/user-interactions/view/${tmdb_movie_id}`,
         {},
         {
           headers: {
