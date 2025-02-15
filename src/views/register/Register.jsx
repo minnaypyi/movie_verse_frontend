@@ -16,17 +16,21 @@ export default function Register() {
       setError('All fields are required.');
       return;
     }
-
+    const usernameRegex = /^[A-Za-z0-9]{5,}$/;
+    if (!usernameRegex.test(username)) {
+      setError('Username must only contain alphanumeric and at least 5 characters.');
+      return;
+    }
     // Password validation: at least one lowercase, one uppercase, one number
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
     if (!passwordRegex.test(password)) {
-      setError('Password must contain at least one lowercase letter, one uppercase letter, and one number.');
+      setError('Password must contain at least one lowercase letter, one uppercase letter, one number and one special character.');
       return;
     }
 
     // Save user data in localStorage or use global state management (like Redux)
     localStorage.setItem('userData', JSON.stringify({ username, email, password }));
-
+    localStorage.setItem('fromRegister', 'true');
     // Navigate to the Select Genre page
     history.push('/select-genre');
   };

@@ -74,7 +74,10 @@ const MovieOverview = () => {
           if (ratingResponse.data) {
             setRating(ratingResponse.data.rating || 0); // Assuming the rating is in the response
           }
-
+        } catch (error) {
+          console.warn("No rating found or error fetching rating:", error);
+        }
+        try {
         // Fetch the review
         const reviewResponse = await axios.get(
           `http://${backendUrl}:8080/api/reviews/${tmdbMovie.id}/user`, 
@@ -110,7 +113,9 @@ const MovieOverview = () => {
     }
 
     try {
-
+      let reviewSubmitted = false;
+    let ratingSubmitted = false;
+      if (review.trim()) {
       await axios.post(
         `http://${backendUrl}:8080/api/reviews/${tmdbMovie.id}?reviewText=${encodeURIComponent(review)}&isEdit=${isEdit}`,
         {},
@@ -121,7 +126,21 @@ const MovieOverview = () => {
           },
         }
       );
-
+      reviewSubmitted = true;
+    } else {
+      // Send DELETE request if review is empty
+      await axios.delete(
+        `http://${backendUrl}:8080/api/reviews/${tmdbMovie.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      reviewSubmitted = true;
+    
+    }
+    if (rating > 0) {
       await axios.post(
         `http://${backendUrl}:8080/api/ratings/${tmdbMovie.id}?rating=${rating}`,
         {},
@@ -132,7 +151,13 @@ const MovieOverview = () => {
           },
         }
       );
-      
+    }
+    ratingSubmitted = true;
+    if (reviewSubmitted || ratingSubmitted) {
+      toast.success("Review & Rating submitted successfully!");
+    } else {
+      toast.warn("Nothing to submit! Please enter a rating or review.");
+    }
 
       console.log("Review & Rating submitted!");
       setIsModalOpen(false);

@@ -2,7 +2,7 @@
 import { ThemeToggler, TopProgressLoader } from '@app/components/common';
 import * as route from '@app/constants/routes';
 import React, { useEffect, useState } from 'react';
-import { Link, NavLink, withRouter } from 'react-router-dom';
+import { Link, NavLink, withRouter, useHistory, useLocation } from 'react-router-dom';
 import Searchbar from './Searchbar';
 
 const Navigation = () => {
@@ -10,6 +10,8 @@ const Navigation = () => {
   const [isOpenSearchForMobile, setOpenSearchMobile] = useState(false);
   const [user, setUser] = useState(null); // Store user info
   const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown toggle
+  const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     if (window.screen.width > 768) {
@@ -66,7 +68,15 @@ const Navigation = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('username');
     setUser(null);
-    window.location.reload();
+    if (
+      location.pathname === route.FAVORITE_MOVIES ||
+      location.pathname === route.WATCHED_MOVIES ||
+      location.pathname === route.RECOMMENDED_MOVIES
+    ) {
+      history.push(route.HOME); // Redirect to home if on specific page
+    } else {
+      window.location.reload(); // Refresh on other pages
+    }
   };
 
   return (
@@ -195,9 +205,13 @@ const Navigation = () => {
                 </button>
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
-                    <Link to={route.PROFILE} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false); // Close the dropdown
+                        history.push(route.PROFILE); // Navigate to profile page
+                        }} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                       Profile
-                    </Link>
+                      </button>
                     <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
                       Logout
                     </button>

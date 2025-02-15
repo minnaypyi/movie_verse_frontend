@@ -6,6 +6,7 @@ import { useDocumentTitle } from '@app/hooks';
 import useWatched from '@app/hooks/useWatched';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom'; // Import useHistory
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3/movie';
@@ -20,9 +21,17 @@ const WatchedMovies = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
 
-    
+  const history = useHistory(); // Initialize useHistory hook
 
   useDocumentTitle('Watched Movies | MOVIEVERSE');
+
+    // Check if user is logged in, if not, redirect to login page
+    useEffect(() => {
+      const authToken = localStorage.getItem('authToken'); // Check if token exists in localStorage
+      if (!authToken) {
+          history.push('/login'); // Redirect to login if not logged in
+      }
+  }, [history]);
 
   useEffect(() => {
     if (watchedMovies.length === 0) {
@@ -76,6 +85,8 @@ const WatchedMovies = () => {
       </div>
       {loading ? (
         <p>Loading movies...</p>
+      ) : movieData.length === 0 ? (
+        <p>No watched movies found. Add some watched movies to get started!</p> // Display a message if no favorite movies
       ) : (
         <>
       <MovieList movies={displayedMovies} templateCount={10} />

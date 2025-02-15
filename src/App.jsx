@@ -2,12 +2,59 @@ import { Footer, Navigation, ScrollTop, ThemeToggler } from '@app/components/com
 import withProgress from '@app/components/hoc/withProgress';
 import * as route from '@app/constants/routes';
 import * as view from '@app/views';
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, useLocation, useHistory } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
+import React, { useEffect, useState } from "react";
 
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const MainContent = () => {
   const location = useLocation(); // Get current route
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const history = useHistory();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("authToken");
+      const username = localStorage.getItem("username");
+
+      if (!token || !username) {
+        //console.log("No token found. Redirecting to login.");
+        //history.push("/login");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://${backendUrl}:8080/api/users/verify-token`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ username }),
+        });
+
+        if (!response.ok) {
+          console.log("Token is invalid. Redirecting to login.");
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("username");
+          //history.push("/login");
+        } else {
+          console.log("Token is valid.");
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        //history.push("/login");
+      }
+    };
+    verifyToken();
+  }, [history]); // Runs when `navigate` changes (on page load)
+
+  // if (!isAuthenticated) {
+  //   return <div>Loading...</div>; // Show loading screen while checking authentication
+  // }
+
 
   return (
     <main id="main" key={location.pathname}> {/* 🔥 Key forces re-render on route change */}
@@ -36,6 +83,7 @@ const MainContent = () => {
         <Route exact path={route.FAVORITE_MOVIES} component={withProgress(view.FavoriteMovies)}/>
         <Route exact path={route.WATCHED_MOVIES} component={withProgress(view.WatchedMovies)}/>
         <Route exact path={route.RECOMMENDED_MOVIES} component={withProgress(view.RecommendedMovies)}/>
+        <Route exact path={route.PROFILE} component={withProgress(view.UserProfile)}/>
         <Route component={view.PageNotFound} />
       </Switch>
     </main>

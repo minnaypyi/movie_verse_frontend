@@ -30,7 +30,7 @@ const Home = ({ history }) => {
     <>
       <MovieSlider movies={popularMovies?.results || []} />
       <div className="container__wrapper">
-        {isAuthenticated && recommendedMovies && (
+        {/* {isAuthenticated && recommendedMovies && recommendedMovies.results?.length > 0 ? (
           <>
             <div className="movie__header">
               <div className="movie__header-title header__title">
@@ -45,6 +45,33 @@ const Home = ({ history }) => {
             >
               View All Recommended Movies
             </button>
+          </>
+        ): (
+          isAuthenticated && (
+            <p>No recommended movies available at the moment.</p> // Fallback message when no recommended movies
+          )
+        )} */}
+        {isAuthenticated && (
+          <>
+            <div className="movie__header">
+              <div className="movie__header-title header__title">
+                <br /><br />
+                <h1>Recommended Movies</h1>
+              </div>
+            </div>
+            {recommendedMovies?.results?.length > 0 ? (
+              <>
+                <MovieList movies={recommendedMovies.results.slice(0, 5)} />
+                <button
+                  className="button--primary m-auto"
+                  onClick={() => history.push('/recommended-movies')}
+                >
+                  View All Recommended Movies
+                </button>
+              </>
+            ) : (
+              <p>No recommended movies available at the moment. Make some interactions.</p> // Fallback message
+            )}
           </>
         )}
         {upcomingMovies && (

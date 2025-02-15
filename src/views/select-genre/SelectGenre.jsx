@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import { useHistory  } from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -17,6 +17,13 @@ export default function SelectGenre() {
   const history = useHistory();
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Check if the user came from the registration page
+    if (!localStorage.getItem('fromRegister') || localStorage.getItem('fromRegister') !== 'true') {
+      history.push('/register'); // Redirect to register page if not
+    }
+  }, [history]);
 
   const toggleGenre = (genre) => {
     setSelectedGenres((prev) =>
@@ -52,6 +59,31 @@ export default function SelectGenre() {
       });
 
       if (response.ok) {
+        // After successful registration, log the user in by sending login request
+        const loginResponse = await fetch(`http://${backendUrl}:8080/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: userData.username, // assuming username is available in userData
+            password: userData.password, // assuming password is available in userData
+          }),
+        });
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json();
+          // Store token and username in localStorage
+          localStorage.setItem("authToken", loginData.token);
+          localStorage.setItem("username", userData.username);
+
+          // Redirect to home on successful login
+          localStorage.removeItem("userData");  // Clean up the temporary user data
+          localStorage.removeItem("fromRegister");
+          history.push('/'); // Or wherever you want to redirect after login
+        } else {
+          setError('Login failed after registration.');
+        }
+
         localStorage.removeItem("userData");
         history.push('/'); // Redirect to home on success
       } else {

@@ -23,7 +23,7 @@ const defaultState = {
   topRated: null,
   upcoming: null,
   tvShows: null,
-  recommended: null,
+  recommended: { results: [] },
 };
 
 const moviesReducer = (state = defaultState, action) => {
@@ -118,7 +118,7 @@ const moviesReducer = (state = defaultState, action) => {
         upcoming: action.payload.upcoming,
         topRated: action.payload.topRated,
         popular: action.payload.popular,
-        recommended: action.payload.recommended, // ✅ Store recommended movies
+        recommended: action.payload.recommended || { results: [] }, // ✅ Store recommended movies
       };
 
     default:
