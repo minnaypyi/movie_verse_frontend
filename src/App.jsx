@@ -179,6 +179,11 @@ const MainContent = () => {
           path={route.FORGOTPASSWORD}
           component={withProgress(view.ForgotPassword)}
         />
+        <Route
+          exact
+          path={route.VIEW_PEOPLE_CASTING}
+          component={withProgress(view.Casting)}
+        />
         <Route component={view.PageNotFound} />
       </Switch>
     </main>
