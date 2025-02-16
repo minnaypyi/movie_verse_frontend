@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import * as route from "@app/constants/routes";
 
@@ -10,6 +10,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const history = useHistory();
   const location = useLocation();
+
+  // Clear localStorage when login page is visited
+  useEffect(() => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 

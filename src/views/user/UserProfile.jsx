@@ -16,6 +16,9 @@ const UserProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGenreModalOpen, setIsGenreModalOpen] = useState(false);
+  const [allGenres, setAllGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -114,6 +117,78 @@ const UserProfile = () => {
     };
     return () => controller.abort(); // Cleanup function to cancel request
   }, [history]);
+
+  const openGenreModal = () => {
+    const token = localStorage.getItem("authToken");
+    fetch(`http://${backendUrl}:8080/api/genres/getallgenres`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!Array.isArray(data)) {
+          console.error("Expected an array but got:", data);
+          return;
+        }
+        setAllGenres(data);
+        setSelectedGenres(user.favouriteGenres.map((genre) => genre.id));
+        setIsGenreModalOpen(true);
+      })
+      .catch((error) => console.error("Error fetching genres:", error));
+  };
+
+  const handleGenreSelection = (genreId) => {
+    setSelectedGenres((prevSelectedGenres) => {
+      if (prevSelectedGenres.includes(genreId)) {
+        // Remove the genre if it is already selected
+        return prevSelectedGenres.filter((id) => id !== genreId);
+      } else {
+        // Add the genre if it is not selected
+        return [...prevSelectedGenres, genreId];
+      }
+    });
+  };
+
+  const saveFavoriteGenres = () => {
+    const token = localStorage.getItem("authToken");
+
+    // Prepare genre objects with id and name
+    const genreRequests = selectedGenres.map((genreId) => {
+      const genre = allGenres.find((g) => g.id === genreId);
+      return { id: genre.id, name: genre.name };
+    });
+
+    fetch(`http://${backendUrl}:8080/api/users/setGenres`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(genreRequests),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(text);
+          });
+        }
+        return response.text();
+      })
+      .then((message) => {
+        toast.success(message);
+        setUser((prev) => ({
+          ...prev,
+          favouriteGenres: genreRequests, // Update state with new genres
+        }));
+        setIsGenreModalOpen(false);
+      })
+      .catch((error) => {
+        console.error("Error updating favorite genres:", error);
+        toast.error(error.message || "Failed to update favorite genres.");
+      });
+  };
 
   const handleChangePassword = () => {
     // Password validation: at least one lowercase, one uppercase, one number
@@ -232,6 +307,9 @@ const UserProfile = () => {
           {user.favouriteGenres && user.favouriteGenres.length > 0
             ? user.favouriteGenres.map((genre) => genre.name).join(", ")
             : "No favourite genres"}
+          <button onClick={openGenreModal} className="btn-edit">
+            Edit
+          </button>
         </p>
         <p>
           <strong>Watched Movies:</strong> {user.watchedMoviesCount || 0}
@@ -288,6 +366,70 @@ const UserProfile = () => {
             <div className="modal-buttons">
               <button onClick={handleChangePassword}>Change Password</button>
               <button onClick={handleCloseModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* {isGenreModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Select Favorite Genres</h2>
+            <div className="genre-list">
+              {allGenres.map((genre) => (
+                <label key={genre.id} className="genre-item">
+                  <input
+                    type="checkbox"
+                    checked={selectedGenres.includes(genre.id)} // Check if the genre is selected
+                    onChange={() => handleGenreSelection(genre.id)} // Handle genre selection/unselection
+                  />
+                  {genre.name}
+                </label>
+              ))}
+            </div>
+            <div className="modal-buttons">
+              <button onClick={saveFavoriteGenres}>Save</button>
+              <button onClick={() => setIsGenreModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )} */}
+
+      {isGenreModalOpen && (
+        <div className="genre-modal-overlay">
+          <div className="genre-modal-content">
+            <h2 className="text-4xl font-extrabold text-center text-white mb-6">
+              Select Your Favorite Genres
+            </h2>
+            <div className="space-y-5">
+              {allGenres.map((genre) => (
+                <button
+                  key={genre.id}
+                  onClick={() => handleGenreSelection(genre.id)}
+                  className={`w-full py-4 rounded-lg text-2xl font-semibold transition ${
+                    selectedGenres.includes(genre.id)
+                      ? "bg-blue-100 text-black"
+                      : "bg-gray-800 text-white"
+                  }`}
+                >
+                  {genre.name}
+                  {selectedGenres.includes(genre.id) && " ✓"}
+                </button>
+              ))}
+            </div>
+            <div className="genre-modal-buttons mt-8 flex justify-between">
+              <button
+                onClick={saveFavoriteGenres}
+                className="w-1/2 py-4 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-500 transition"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setIsGenreModalOpen(false)}
+                className="w-1/2 py-4 bg-gray-500 text-white text-2xl font-bold rounded-lg hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
