@@ -1,9 +1,16 @@
 /* eslint-disable react/jsx-boolean-value */
-import { ThemeToggler, TopProgressLoader } from '@app/components/common';
-import * as route from '@app/constants/routes';
-import React, { useEffect, useState } from 'react';
-import { Link, NavLink, withRouter, useHistory, useLocation } from 'react-router-dom';
-import Searchbar from './Searchbar';
+import { ThemeToggler, TopProgressLoader } from "@app/components/common";
+import * as route from "@app/constants/routes";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  Link,
+  NavLink,
+  withRouter,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
+import Searchbar from "./Searchbar";
 
 const Navigation = () => {
   const [isOpenNavigation, setOpenNavigation] = useState(false);
@@ -12,39 +19,40 @@ const Navigation = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown toggle
   const history = useHistory();
   const location = useLocation();
+  const darkMode = useSelector((state) => state.misc.darkMode); // Get darkMode state from Redux
 
   useEffect(() => {
     if (window.screen.width > 768) {
-      window.addEventListener('scroll', scrollHandler);
+      window.addEventListener("scroll", scrollHandler);
     }
-    return () => window.removeEventListener('scroll', scrollHandler);
+    return () => window.removeEventListener("scroll", scrollHandler);
   }, []);
 
   useEffect(() => {
     // Get user from localStorage
     // const storedUser = JSON.parse(localStorage.getItem('userData'));
-    const storedUser = localStorage.getItem('username');
+    const storedUser = localStorage.getItem("username");
     if (storedUser) {
       setUser(storedUser);
     }
   }, []);
 
   const onNavigationToggle = () => {
-    document.body.classList.toggle('is-navigation-open');
-    document.body.classList.remove('is-search-open');
+    document.body.classList.toggle("is-navigation-open");
+    document.body.classList.remove("is-search-open");
     setOpenNavigation(!isOpenNavigation);
   };
 
   const onSearchToggle = () => {
-    document.body.classList.toggle('is-search-open');
-    document.body.classList.remove('is-navigation-open');
+    document.body.classList.toggle("is-search-open");
+    document.body.classList.remove("is-navigation-open");
     setOpenSearchMobile(true);
     setOpenNavigation(false);
   };
 
   const onClickLink = (e) => {
-    if (e.target.nodeName === 'A') {
-      document.body.classList.remove('is-navigation-open');
+    if (e.target.nodeName === "A") {
+      document.body.classList.remove("is-navigation-open");
       setOpenNavigation(false);
       setOpenSearchMobile(false);
       window.scrollTo(0, 0);
@@ -57,16 +65,15 @@ const Navigation = () => {
 
   const scrollHandler = () => {
     if (window.pageYOffset > 100) {
-      document.body.classList.add('is-scrolled');
+      document.body.classList.add("is-scrolled");
     } else {
-      document.body.classList.remove('is-scrolled');
+      document.body.classList.remove("is-scrolled");
     }
   };
 
-  
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('username');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
     setUser(null);
     if (
       location.pathname === route.FAVORITE_MOVIES ||
@@ -85,11 +92,15 @@ const Navigation = () => {
       <div className="navigation" onClick={onClickLink}>
         <div className="navigation__wrapper">
           <button className="navigation__toggle" onClick={onNavigationToggle}>
-            <i className={`fa fa-${isOpenNavigation ? 'times' : 'bars'}`} />
+            <i className={`fa fa-${isOpenNavigation ? "times" : "bars"}`} />
           </button>
           <div className="navigation__logo">
             <Link to={route.HOME}>
-              <img src="/logo-full.png" alt="" />
+              <img src="/logo-light-rb.png" alt="" />
+              {/* <img
+                src={darkMode ? "/logo-light.png" : "/logo-dark.png"}
+                alt="Logo"
+              /> */}
             </Link>
           </div>
           <div className="navigation__menu-wrapper">
@@ -194,13 +205,18 @@ const Navigation = () => {
             className="search__toggle button--icon"
             onClick={onSearchToggle}
           >
-            <i className={`fa fa-${isOpenSearchForMobile ? 'times' : 'search'}`} />
+            <i
+              className={`fa fa-${isOpenSearchForMobile ? "times" : "search"}`}
+            />
           </button>
           {/* User Dropdown OR Log In/Register */}
           <div className="navigation__active">
             {user ? (
               <div className="relative">
-                <button className="navigation__link" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                <button
+                  className="navigation__link"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
                   {user} <i className="fa fa-caret-down"></i>
                 </button>
                 {dropdownOpen && (
@@ -209,10 +225,15 @@ const Navigation = () => {
                       onClick={() => {
                         setDropdownOpen(false); // Close the dropdown
                         history.push(route.PROFILE); // Navigate to profile page
-                        }} className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                      }}
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
                       Profile
-                      </button>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
                       Logout
                     </button>
                   </div>

@@ -1,15 +1,15 @@
-import { Container, Filter, Pagination } from '@app/components/common';
-import CustomPagination from '@app/components/common/Pagination/Pagination';
-import withLoader from '@app/components/hoc/withLoader';
-import { MovieList } from '@app/components/main';
-import { numberWithCommas } from '@app/helpers';
-import { useDidMount, useDocumentTitle, usePageSaver } from '@app/hooks';
-import { fetchTvShows } from '@app/redux/actions';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container, Filter, Pagination } from "@app/components/common";
+import CustomPagination from "@app/components/common/Pagination/Pagination";
+import withLoader from "@app/components/hoc/withLoader";
+import { MovieList } from "@app/components/main";
+import { numberWithCommas } from "@app/helpers";
+import { useDidMount, useDocumentTitle, usePageSaver } from "@app/hooks";
+import { fetchTvShows } from "@app/redux/actions";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const TvShows = () => {
-  const { tvShows, filter } = useSelector(state => ({
+  const { tvShows, filter } = useSelector((state) => ({
     tvShows: state.movies.tvShows,
     filter: state.filters.tv,
   }));
@@ -17,7 +17,7 @@ const TvShows = () => {
   const dispatch = useDispatch();
   const didMount = useDidMount();
 
-  useDocumentTitle('TV Shows | MOVX');
+  useDocumentTitle("TV Shows | MOVIEVERSE");
   useEffect(() => {
     if (!tvShows || didMount) {
       dispatch(fetchTvShows(currentPage));
@@ -60,4 +60,4 @@ const TvShows = () => {
   );
 };
 
-export default withLoader('tvShows')(TvShows);
+export default withLoader("tvShows")(TvShows);

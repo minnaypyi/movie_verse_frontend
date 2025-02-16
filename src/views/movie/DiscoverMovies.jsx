@@ -1,14 +1,14 @@
-import { Container, Filter, Pagination } from '@app/components/common';
-import CustomPagination from '@app/components/common/Pagination/Pagination';
-import { MovieList } from '@app/components/main/Movies'; // Named import
-import { numberWithCommas } from '@app/helpers';
-import { useDidMount, useDocumentTitle, usePageSaver } from '@app/hooks';
-import { fetchDiscoverMovies } from '@app/redux/actions';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container, Filter, Pagination } from "@app/components/common";
+import CustomPagination from "@app/components/common/Pagination/Pagination";
+import { MovieList } from "@app/components/main/Movies"; // Named import
+import { numberWithCommas } from "@app/helpers";
+import { useDidMount, useDocumentTitle, usePageSaver } from "@app/hooks";
+import { fetchDiscoverMovies } from "@app/redux/actions";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const DiscoverMovies = () => {
-  const { discoverMovies, filter } = useSelector(state => ({
+  const { discoverMovies, filter } = useSelector((state) => ({
     discoverMovies: state.movies.discover,
     filter: state.filters.discover,
   }));
@@ -16,7 +16,7 @@ const DiscoverMovies = () => {
   const didMount = useDidMount();
   const { currentPage, setCurrentPage } = usePageSaver();
 
-  useDocumentTitle('Discover Movies | MOVX');
+  useDocumentTitle("Discover Movies | MOVIEVERSE");
   useEffect(() => {
     if (!discoverMovies || didMount) {
       dispatch(fetchDiscoverMovies(currentPage));
@@ -37,14 +37,9 @@ const DiscoverMovies = () => {
           <h1>Discover Movies</h1>
           <h3>{numberWithCommas(discoverMovies?.total_results || 0)} Movies</h3>
         </div>
-        {discoverMovies && (
-          <Filter filterCategory="discover" />
-        )}
+        {discoverMovies && <Filter filterCategory="discover" />}
       </div>
-      <MovieList
-        movies={discoverMovies?.results || []}
-        templateCount={10}
-      />
+      <MovieList movies={discoverMovies?.results || []} templateCount={10} />
       {discoverMovies && (
         <CustomPagination
           activePage={discoverMovies.page}

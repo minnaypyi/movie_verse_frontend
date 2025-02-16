@@ -1,20 +1,23 @@
-import { ImageLoader } from '@app/components/common';
-import { TMDB_BACKDROP_PATH, TMDB_POSTER_PATH } from '@app/constants/actionType';
-import { getYear, numberWithCommas } from '@app/helpers';
-import { useDocumentTitle } from '@app/hooks';
-import React, { useEffect } from 'react';
+import { ImageLoader } from "@app/components/common";
+import {
+  TMDB_BACKDROP_PATH,
+  TMDB_POSTER_PATH,
+} from "@app/constants/actionType";
+import { getYear, numberWithCommas } from "@app/helpers";
+import { useDocumentTitle } from "@app/hooks";
+import React, { useEffect } from "react";
 // @ts-ignore
-import LazyLoad from 'react-lazy-load';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import LazyLoad from "react-lazy-load";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const MovieCasts = ({ history }) => {
-  const { movie, casts } = useSelector(state => ({
+  const { movie, casts } = useSelector((state) => ({
     movie: state.movies.current.movie,
-    casts: state.movies.current.casts
+    casts: state.movies.current.casts,
   }));
 
-  useDocumentTitle('Movie Casts | MOVX');
+  useDocumentTitle("Movie Casts | MOVIEVERSE");
   useEffect(() => {
     if (!movie) {
       history.goBack();
@@ -29,16 +32,18 @@ const MovieCasts = ({ history }) => {
         <img src={`${TMDB_BACKDROP_PATH + movie.backdrop_path}`} alt="" />
         <div className="posters__banner-content">
           <h1>
-            {movie.original_title || movie.original_name || movie.name || 'Movie Title Not Found'}
+            {movie.original_title ||
+              movie.original_name ||
+              movie.name ||
+              "Movie Title Not Found"}
             &nbsp;
             {(movie.release_date || movie.first_air_date) && (
-              <span>{`(${getYear(movie.release_date || movie.first_air_date)})`}</span>
+              <span>{`(${getYear(
+                movie.release_date || movie.first_air_date
+              )})`}</span>
             )}
           </h1>
-          <button
-            className="button--back"
-            onClick={history.goBack}
-          >
+          <button className="button--back" onClick={history.goBack}>
             Back
           </button>
         </div>
@@ -52,26 +57,27 @@ const MovieCasts = ({ history }) => {
         </div>
         {casts.length >= 1 && (
           <div className="casts__wrapper">
-            {casts.map(cast => (
+            {casts.map((cast) => (
               <Link
                 key={`cast_${cast.id}`}
                 to={`/view/person/profile/${cast.id}`}
               >
                 <div className="casts__item">
                   <div className="casts__avatar">
-                    <LazyLoad
-                      debounce={false}
-                      offsetVertical={500}
-                    >
+                    <LazyLoad debounce={false} offsetVertical={500}>
                       <ImageLoader
                         alt={cast.name}
                         imgId={cast.id}
-                        src={cast.profile_path ? `${TMDB_POSTER_PATH + cast.profile_path}` : '/placeholder.jpg'}
+                        src={
+                          cast.profile_path
+                            ? `${TMDB_POSTER_PATH + cast.profile_path}`
+                            : "/placeholder.jpg"
+                        }
                       />
                     </LazyLoad>
                   </div>
                   <div className="casts__details">
-                    <h4>{cast.name || 'Not Available'}</h4>
+                    <h4>{cast.name || "Not Available"}</h4>
                     {cast.character && (
                       <p className="card__character">{`${cast.character}`}</p>
                     )}

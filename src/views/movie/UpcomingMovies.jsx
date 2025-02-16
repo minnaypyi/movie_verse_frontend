@@ -1,22 +1,22 @@
-import { Container, Pagination } from '@app/components/common';
-import CustomPagination from '@app/components/common/Pagination/Pagination';
-import { MovieList } from '@app/components/main/Movies'; // Named import
-import { numberWithCommas } from '@app/helpers/helperFunctions';
-import { useDocumentTitle, usePageSaver } from '@app/hooks';
-import { fetchUpcomingMovies } from '@app/redux/actions';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container, Pagination } from "@app/components/common";
+import CustomPagination from "@app/components/common/Pagination/Pagination";
+import { MovieList } from "@app/components/main/Movies"; // Named import
+import { numberWithCommas } from "@app/helpers/helperFunctions";
+import { useDocumentTitle, usePageSaver } from "@app/hooks";
+import { fetchUpcomingMovies } from "@app/redux/actions";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const UpcomingMovies = () => {
-  const { upcomingMovies, isLoading } = useSelector(state => ({
+  const { upcomingMovies, isLoading } = useSelector((state) => ({
     upcomingMovies: state.movies.upcoming,
     isLoading: state.misc.isLoading,
   }));
   const { currentPage, setCurrentPage } = usePageSaver();
   const dispatch = useDispatch();
-  const queryString = '/movie/upcoming';
+  const queryString = "/movie/upcoming";
 
-  useDocumentTitle('Upcoming Movies | MOVX');
+  useDocumentTitle("Upcoming Movies | MOVIEVERSE");
 
   // Initial fetch
   useEffect(() => {
@@ -41,10 +41,7 @@ const UpcomingMovies = () => {
           <h3>{numberWithCommas(upcomingMovies?.total_results || 0)} Movies</h3>
         </div>
       </div>
-      <MovieList
-        movies={upcomingMovies?.results || []}
-        templateCount={10}
-      />
+      <MovieList movies={upcomingMovies?.results || []} templateCount={10} />
       {upcomingMovies && (
         <CustomPagination
           activePage={upcomingMovies.page}

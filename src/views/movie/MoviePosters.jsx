@@ -1,17 +1,17 @@
-import { TabContent, Tabs } from '@app/components/common';
-import { MovieBackdrop, MoviePoster } from '@app/components/main';
-import { TMDB_BACKDROP_PATH } from '@app/constants/actionType';
-import { getYear } from '@app/helpers';
-import { useDocumentTitle } from '@app/hooks';
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { TabContent, Tabs } from "@app/components/common";
+import { MovieBackdrop, MoviePoster } from "@app/components/main";
+import { TMDB_BACKDROP_PATH } from "@app/constants/actionType";
+import { getYear } from "@app/helpers";
+import { useDocumentTitle } from "@app/hooks";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const MoviePosters = ({ history }) => {
-  const movie = useSelector(state => state.movies.current.movie);
+  const movie = useSelector((state) => state.movies.current.movie);
   const posters = movie?.images?.posters || [];
   const backdrops = movie?.images?.backdrops || [];
 
-  useDocumentTitle('Movie Posters | MOVX');
+  useDocumentTitle("Movie Posters | MOVIEVERSE");
   useEffect(() => {
     if (!movie) {
       history.goBack();
@@ -23,18 +23,28 @@ const MoviePosters = ({ history }) => {
   return (
     <>
       <div className="posters__banner">
-        <img src={movie.backdrop_path ? `${TMDB_BACKDROP_PATH}${movie.backdrop_path}` : '/background.jpg'} alt="" />
+        <img
+          src={
+            movie.backdrop_path
+              ? `${TMDB_BACKDROP_PATH}${movie.backdrop_path}`
+              : "/background.jpg"
+          }
+          alt=""
+        />
         <div className="posters__banner-content">
           <h1>
-            {movie.original_title || movie.original_name || movie.name || 'Movie Title Not Found'}
+            {movie.original_title ||
+              movie.original_name ||
+              movie.name ||
+              "Movie Title Not Found"}
             &nbsp;
             {(movie.release_date || movie.first_air_date) && (
-              <span>{`(${getYear(movie.release_date || movie.first_air_date)})`}</span>
+              <span>{`(${getYear(
+                movie.release_date || movie.first_air_date
+              )})`}</span>
             )}
           </h1>
-          <button
-            className="button--back"
-            onClick={history.goBack}>
+          <button className="button--back" onClick={history.goBack}>
             Back
           </button>
         </div>
@@ -52,10 +62,7 @@ const MoviePosters = ({ history }) => {
           </TabContent>
           <TabContent index={1} label={`Backdrops (${backdrops.length})`}>
             {backdrops.length >= 1 ? (
-              <MovieBackdrop
-                backdrops={backdrops}
-                id={movie.id}
-              />
+              <MovieBackdrop backdrops={backdrops} id={movie.id} />
             ) : (
               <div className="search__no-result">
                 <h1>No backdrop image found.</h1>

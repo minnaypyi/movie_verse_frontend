@@ -1,12 +1,12 @@
-import { Container } from '@app/components/common';
-import { MovieList } from '@app/components/main';
-import { numberWithCommas } from '@app/helpers';
-import { useDocumentTitle } from '@app/hooks';
-import { useSelector } from 'react-redux';
+import { Container } from "@app/components/common";
+import { MovieList } from "@app/components/main";
+import { numberWithCommas } from "@app/helpers";
+import { useDocumentTitle } from "@app/hooks";
+import { useSelector } from "react-redux";
 
 const Favorites = () => {
-  useDocumentTitle('My Favorites | MOVX');
-  const favorites = useSelector(state => state.favorites);
+  useDocumentTitle("My Favorites | MOVIEVERSE");
+  const favorites = useSelector((state) => state.favorites);
 
   return (
     <>
@@ -18,10 +18,7 @@ const Favorites = () => {
               <h3>{numberWithCommas(favorites.length)} Movies</h3>
             </div>
           </div>
-          <MovieList
-            category="movie"
-            movies={favorites}
-          />
+          <MovieList category="movie" movies={favorites} />
         </Container>
       ) : (
         <div className="error">

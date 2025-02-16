@@ -1,15 +1,15 @@
-import { MovieList } from '@app/components/main';
-import { useDocumentTitle } from '@app/hooks';
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { MovieList } from "@app/components/main";
+import { useDocumentTitle } from "@app/hooks";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const Casting = ({ history }) => {
-  const { actor, casting } = useSelector(state => ({
+  const { actor, casting } = useSelector((state) => ({
     actor: state.people.current.actor,
     casting: state.people.current.casting,
   }));
 
-  useDocumentTitle('Castings | MOVX');
+  useDocumentTitle("Castings | MOVIEVERSE");
   useEffect(() => {
     if (!actor) {
       history.goBack();
@@ -22,9 +22,7 @@ const Casting = ({ history }) => {
         <img src="/background.jpg" alt="" />
         <div className="posters__banner-content">
           <h1>{actor.name}</h1>
-          <button
-            className="button--back"
-            onClick={history.goBack}>
+          <button className="button--back" onClick={history.goBack}>
             Back
           </button>
         </div>
