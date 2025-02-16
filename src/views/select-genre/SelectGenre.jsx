@@ -59,8 +59,9 @@ export default function SelectGenre() {
       });
 
       if (response.ok) {
+        console.log("Trying to log in");
         // After successful registration, log the user in by sending login request
-        const loginResponse = await fetch(`http://${backendUrl}:8080/api/auth/login`, {
+        const loginResponse = await fetch(`http://${backendUrl}:8080/api/auth/users/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -71,6 +72,7 @@ export default function SelectGenre() {
           }),
         });
         if (loginResponse.ok) {
+          console.log("Login Success");
           const loginData = await loginResponse.json();
           // Store token and username in localStorage
           localStorage.setItem("authToken", loginData.token);
