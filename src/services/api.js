@@ -147,6 +147,7 @@ const mapBackendReviewsToTmdbFormat = (reviews) => {
         created_at: review.createdAt, // Review creation timestamp
         updated_at: review.updatedAt, // Review last updated timestamp
         url: `https://yourwebsite.com/review/${review.createdAt}`, // Placeholder URL for now
+        reviewSentiment: review.reviewSentiment
       };
     }),
     page: 1, // You can add pagination if necessary
